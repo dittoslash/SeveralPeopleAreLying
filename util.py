@@ -1,6 +1,5 @@
 import json
 
-
 # loads the tokens.json file
 def load_tokens():
     with open('config.json', 'r+') as f:
@@ -37,3 +36,10 @@ def parse_message(message):
             parsed_message[-1] += letter
 
     return parsed_message
+
+# rot13 decode/encode
+def rot13(input):
+    rot13 = str.maketrans( 
+    "ABCDEFGHIJKLMabcdefghijklmNOPQRSTUVWXYZnopqrstuvwxyz", 
+    "NOPQRSTUVWXYZnopqrstuvwxyzABCDEFGHIJKLMabcdefghijklm")
+    return str.translate(input, rot13)
