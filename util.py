@@ -1,15 +1,24 @@
 import json
 
-# loads the tokens.json file
-def load_tokens():
+# loads the config.json file
+def load_config():
     with open('config.json', 'r+') as f:
-        tokens = json.load(f)
+        config = json.load(f)
 
-    return tokens
+    return config
 
+# loads the questions.json file and rot13s it
+def load_questions():
+    with open('questions.json', 'r+') as f:
+        questions = json.load(f)["questions"]
 
-tokens = load_tokens()
-pre = tokens['prefix']  # fast access of the prefix
+    for q in questions:
+        q["answer"] = rot13(q["answer"])
+
+    return questions
+
+config = load_config()
+pre = config['prefix']  # fast access of the prefix
 
 
 # main message parser

@@ -3,7 +3,7 @@ import util
 
 
 # settings constants
-tokens = util.load_tokens()
+tokens = util.load_config()
 client = discord.Client()
 
 
