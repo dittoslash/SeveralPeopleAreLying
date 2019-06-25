@@ -49,6 +49,10 @@ class Match:
     async def lobby(self):
         self.stage = lobby
 
-    def addPlayer(self, user):
+    def addPlayer(self, user): # Use these instead of fucking with the players dict yourself.
         self.players.append(Player(user, self))
-        players[user.id] = self 
+        players[user.id] = self
+
+    def removePlayer(self, user): # Might not actually work. Probably will.
+        self.players.remove(Player(user, self))
+        del players[user.id]
