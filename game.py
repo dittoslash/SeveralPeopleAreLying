@@ -4,13 +4,22 @@ players = {}
 matches = {}
 
 # check if user is in a match
+
+
 def player(message):
-    if message.author.id in players.keys(): return players[message.author.id]
-    else: return False
+    if message.author.id in players.keys():
+        return players[message.author.id]
+    else:
+        return False
 # check if there is a match in that channel
+
+
 def match(message):
-    if message.channel.id in matches.keys(): return matches[message.channel.id]
-    else: return False
+    if message.channel.id in matches.keys():
+        return matches[message.channel.id]
+    else:
+        return False
+
 
 class Player:
 
@@ -28,7 +37,7 @@ class Match:
         self.players = []
         self.addPlayer(host)
         self.stage = "lobby"
-        #self.settings = {
+        # self.settings = {
         #    "rounds": 0
         #}
 
@@ -49,10 +58,10 @@ class Match:
     async def lobby(self):
         self.stage = lobby
 
-    def addPlayer(self, user): # Use these instead of fucking with the players dict yourself.
+    def add_player(self, user):  # Use these instead of fucking with the players dict yourself.
         self.players.append(Player(user, self))
         players[user.id] = self
 
-    def removePlayer(self, user): # Might not actually work. Probably will.
+    def remove_player(self, user):  # Might not actually work. Probably will.
         self.players.remove(Player(user, self))
         del players[user.id]
