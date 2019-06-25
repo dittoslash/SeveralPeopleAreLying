@@ -60,7 +60,7 @@ class Match:
 
     def add_player(self, user):  # Use these instead of fucking with the players dict yourself.
         self.players.append(Player(user, self))
-        players[user.id] = self
+        players[user.id] = self 
 
     def remove_player(self, user):  # Might not actually work. Probably will.
         self.players.remove(Player(user, self))
