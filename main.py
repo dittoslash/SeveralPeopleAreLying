@@ -11,32 +11,41 @@ pre = tokens['prefix']  # fast access of the prefix
 client = discord.Client()
 
 
+
 @client.event
 async def on_ready():
     print('----------------')
     print(f'Logged in as {client.user.name}')
     print('----------------')
 
-    matches = []
-    game.matches = []  # so we can also have access to the matches there
-
-    players = []
-    game.players = []
+    game.matches = {} # channel id > match instance
+    game.players = {} # dunno what this was supposed to be so i'm repurposing it. maps user id > player instance
 
 
 @client.event
 async def on_message(message):
-    parsed = [util.parse_message(message.content)]
+    parsed = util.parse_message(message.content)
+    if not parsed: return
 
-    # check if user is in a match
-    def player(message): return m
-
-    if type(message.channel) is DMChannel:  # DMChannels will have different commands
-        pass
+    if type(message) is DMChannel:  # DMChannels will have different commands
+        if game.player(message):
+            pass # probably call something on the relevant match instance
+        else:
+            await message.chnanel.send("You are not in a match.")
     else:
+        if game.match(message): 
+            await game.match(message).on_message(message, parsed) # defer message parsing to the relevant match instance
+            print("debug: deferred to match instance")
+
         if parsed[0] == 'new':
-            match = 'something'  # start a new match
-            matches.append(match)
+            if game.player(message):
+                await message.channel.send(f"You are already in a match (<#{game.players[message.author.id].channel.id}>)")
+            elif not game.match(message):
+                match = game.Match(message.author, message.channel) # start a new match
+                game.matches[message.channel.id] = match
+                await message.channel.send("Match created.")
+            else:
+                await message.channel.send("There is already a match in this channel.")
 
 # main loop
 client.run(tokens['token'])
