@@ -35,7 +35,7 @@ class Match:
         self.host = Player(host, self)
         self.channel = channel
         self.players = []
-        self.addPlayer(host)
+        self.add_player(host)
         self.stage = "lobby"
         # self.settings = {
         #    "rounds": 0
@@ -46,7 +46,7 @@ class Match:
             if player(message):
                 await message.channel.send(f"You are already in a match (<#{players[message.author.id].channel.id}>)")
             elif match(message):
-                matches[message.channel.id].addPlayer(message)
+                matches[message.channel.id].add_player(message)
                 await message.channel.send("Joined successfully.")
             else:
                 await message.channel.send("There is already a match in this channel.")
