@@ -5,8 +5,6 @@ players = {}
 matches = {}
 
 # check if user is in a match
-
-
 def find_player_match(message):
     if message.author.id in players.keys():
         return players[message.author.id]
@@ -14,8 +12,6 @@ def find_player_match(message):
         return False
 
 # check if there is a match in that channel
-
-
 def find_match(message):
     if message.channel.id in matches.keys():
         return matches[message.channel.id]
@@ -23,8 +19,6 @@ def find_match(message):
         return False
 
 # get the player instance representing a player
-
-
 def find_player(message):
     if message.author.id in players.keys():
         for p in players[message.author.id].players:
@@ -32,18 +26,14 @@ def find_player(message):
                 return p
     return False
 
-
 class Player:
-
     def __init__(self, user, match):
         self.user = user
         self.id = self.user.id
         self.match = match
         self.points = 0
 
-
 class Match:
-
     def __init__(self, host, channel):
         self.host = Player(host, self)
         self.channel = channel
