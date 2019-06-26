@@ -77,27 +77,48 @@ class Match:
     async def submit(self):
         self.stage = 'submit'
         self.round += 1
+        self.responses = {}
         questions = util.load_questions()
-        question = random.choice(questions)
+        question = {'prompt':None}
+        while question['prompt'] in self.already_done_questions or question['prompt'] is None:
+            question = random.choice(questions)
+            
+        self.already_done_questions.append(question['prompt'])
         self.term = question['prompt']
         self.definition = question['answer']
 
-        await self.channel.send(f'Round {self.round} has started! Check your DMs!')
+        await self.channel.send(f'**Round {self.round}** has started! Check your DMs!')
 
         for player in self.players:
-            await player.user.send(f'Write a fake definition for: \n\n**{term}** \n\nYou have {60} seconds.')
+            await player.user.send(f'Write a fake definition for: \n\n**{self.term}** \n\nYou have {60} seconds.')
 
-        asyncio.sleep(60)
-        
-        await voting()
+        await asyncio.sleep(60)
+
+        await self.voting()
 
     async def voting(self):
         self.stage = 'voting'
-        await self.channel.send(f'Round {self.round} voting has started! React to the correct definition!')
+        await self.channel.send(f'**Round {self.round} Voting** has started! React to the correct definition for **{self.term}**!')
         # Raine stuff
-        
+
+        responses = list(self.responses.items())
+        responses.append((None,self.definition))
+        responses = random.sample(responses, len(responses))
+        voting_messages = {}
+            
+        for player, definition in responses:
+            msg = await self.channel.send(f'*{definition}*')
+            await msg.add_reaction("✅")
+            voting_messages[player] = msg
+            
+        # eval
+            
+        await asyncio.sleep(60)
+            
         if self.round >= 5:
-            await voting()
+            pass  # ending stuff
+        else:
+            await self.submit()
 
     def add_player(self, user):  # Use these instead of fucking with the players dict yourself.
         self.players.append(Player(user, self))
