@@ -67,7 +67,7 @@ class Match:
 
     async def on_dm(self, message, parsed):
         if self.stage == "submit":
-            self.responses[self.players.index(player(message))] = message.content
+            self.responses[self.players.index(find_player(message))] = message.content
             await util.respond(message, True)
         else:
             await message.channel.send("The match is not currently accepting submissions.")
