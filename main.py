@@ -35,7 +35,6 @@ async def on_message(message):
     else:
         if game.match(message): 
             await game.match(message).on_message(message, parsed) # defer message parsing to the relevant match instance
-            print("debug: deferred to match instance")
 
         if parsed[0] == 'new':
             if game.player(message):

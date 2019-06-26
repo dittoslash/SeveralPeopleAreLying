@@ -47,11 +47,11 @@ class Match:
                 await message.channel.send(f"You are already in a match (<#{players[message.author.id].channel.id}>)")
             else:
                 self.add_player(message)
-                await message.channel.send("Joined successfully.")
+                await util.respond(message, True)
         if parsed[0] == 'leave' and self.stage == 'lobby':
             if player(message):
                 self.remove_player(message)
-                await message.channel.send("Left successfully.")
+                await util.respond(message, True)
             else:
                 await message.channel.send("You are not in this match.")
         if message.author is self.host.user:

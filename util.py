@@ -20,7 +20,6 @@ def load_questions():
 config = load_config()
 pre = config['prefix']  # fast access of the prefix
 
-
 # main message parser
 def parse_message(message):
     if not message.startswith(pre):
@@ -52,3 +51,10 @@ def rot13(input):
     "ABCDEFGHIJKLMabcdefghijklmNOPQRSTUVWXYZnopqrstuvwxyz", 
     "NOPQRSTUVWXYZnopqrstuvwxyzABCDEFGHIJKLMabcdefghijklm")
     return str.translate(input, rot13)
+
+# responds to a message with ✅ or :red_x:
+async def respond(message, result):
+    if result:
+        await message.add_reaction("✅")
+    else:
+        await message.add_reaction(await message.guild.fetch_emoji(593343429308579870))
