@@ -46,7 +46,7 @@ async def on_message(message):
             elif not game.find_match(message):
                 match = game.Match(message.author, message.channel)  # start a new match
                 game.matches[message.channel.id] = match
-                await message.channel.send("Match created.")
+                start_message = await message.channel.send(f"{message.author.mention} has created a match! \nType {pre}join to join!")
             else:
                 await message.channel.send("There is already a match in this channel.")
 
