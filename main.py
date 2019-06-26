@@ -25,19 +25,20 @@ async def on_ready():
 @client.event
 async def on_message(message):
     parsed = util.parse_message(message.content)
-    if not parsed: return
-
-    if type(message) is DMChannel:  # DMChannels will have different commands
-        if game.player(message):
-            pass # probably call something on the relevant match instance
+    if message.author.bot: return
+        if type(message.channel) is DMChannel:  # DMChannels will have different commands
+        if game.player_match(message):
+            await game.player_match(message).on_dm(message, parsed) # defer message parsing to the relevant match instance
         else:
-            await message.chnanel.send("You are not in a match.")
+            await message.channel.send("You are not in a match.")
+
     else:
+        if not parsed: return
         if game.match(message): 
             await game.match(message).on_message(message, parsed) # defer message parsing to the relevant match instance
 
         if parsed[0] == 'new':
-            if game.player(message):
+            if game.player_match(message):
                 await message.channel.send(f"You are already in a match (<#{game.players[message.author.id].channel.id}>)")
             elif not game.match(message):
                 match = game.Match(message.author, message.channel) # start a new match
