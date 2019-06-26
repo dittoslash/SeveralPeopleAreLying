@@ -5,26 +5,33 @@ players = {}
 matches = {}
 
 # check if user is in a match
-def player_match(message):
+
+
+def find_player_match(message):
     if message.author.id in players.keys():
         return players[message.author.id]
     else:
         return False
 
 # check if there is a match in that channel
-def match(message):
+
+
+def find_match(message):
     if message.channel.id in matches.keys():
         return matches[message.channel.id]
     else:
         return False
 
 # get the player instance representing a player
-def player(message):
+
+
+def find_player(message):
     if message.author.id in players.keys():
         for p in players[message.author.id].players:
             if p.id == message.author.id:
                 return p
     return False
+
 
 class Player:
 
@@ -51,13 +58,13 @@ class Match:
 
     async def on_message(self, message, parsed):
         if parsed[0] == 'join' and self.stage == 'lobby':
-            if player_match(message):
+            if find_player_match(message):
                 await message.channel.send(f"You are already in a match (<#{players[message.author.id].channel.id}>)")
             else:
                 self.add_player(message.author)
                 await util.respond(message, True)
         if parsed[0] == 'leave' and self.stage == 'lobby':
-            if player_match(message):
+            if find_player_match(message):
                 self.remove_player(message.author)
                 await util.respond(message, True)
             else:
@@ -81,7 +88,7 @@ class Match:
     def add_player(self, user):  # Use these instead of fucking with the players dict yourself.
         self.players.append(Player(user, self))
         self.responses.append('')
-        players[user.id] = self 
+        players[user.id] = self
 
     def remove_player(self, user):  # Might not actually work. Probably will.
         self.players.remove(Player(user, self))
