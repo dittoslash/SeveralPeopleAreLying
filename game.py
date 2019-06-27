@@ -27,6 +27,14 @@ def find_player(message):
                 return p
     return False
 
+# find player from the id instead of the message
+def find_player_from_id(identifier):
+    if identifier in players.keys():
+        for p in players[identifier].players:
+            if p.id == identifier:
+                return p
+    return False
+
 class Player:
     def __init__(self, user, match):
         self.user = user
@@ -106,15 +114,62 @@ class Match:
         responses = random.sample(responses, len(responses))
         voting_messages = {}
             
-        for player, definition in responses:
-            msg = await self.channel.send(f'*{definition}*')
+        for player_id, definition in responses:
+            msg = await self.channel.send(f'```{definition}```')
             await msg.add_reaction("✅")
-            voting_messages[player] = msg
+            voting_messages[player_id] = msg
+            await asyncio.sleep(1.5)
             
-        # eval
+        await asyncio.sleep(30)
+        
+        points_message = []
+        
+        correct_definition = [response for response in responses if response[0] is None][0][1]
+        points_message.append(f'**Round {self.round} Voting** has finished! This was the correct definition: ```{correct_definition}``` ')
+        
+        for player_id, message in voting_messages.items():
+            message = await self.channel.fetch_message(message.id)
+            reaction = [r for r in message.reactions if r.emoji == "✅" ][0]
+            voters = []
+            async for user in reaction.users():
+                if user.bot: # we don't want our own votes
+                    continue
+                if user.id == player_id:
+                    continue
+                if not find_player_from_id(user.id):
+                    continue
+                voters.append(find_player_from_id(user.id))
             
-        await asyncio.sleep(60)
+            if len(voters) < 1:
+                continue
             
+            if player_id is None: # if the player is None then we have the correct message
+                points_message.append('')
+                for voter in voters[:-1]:   
+                    points_message[-1] += f'{voter.user.mention}, ' # nice formatting
+                    voter.points += 2
+                points_message[-1] += f'{voters[-1].user.mention} ' # the last user mentioned doesn't need a comma
+                voters[-1].points += 2
+                points_message[-1] += ' received 2 points for choosing the correct definition'
+            else:
+                points_message.append(f'{find_player_from_id(player_id).user.mention} got {len(voters)} points by fooling ')
+                find_player_from_id(player_id).points += len(voters)
+                for voter in voters[:-1]:   
+                    points_message[-1] += f'{voter.user.mention}, ' # nice formatting
+                points_message[-1] += f'{voters[-1].user.mention} into thinking their definition was the correct one' # the last user mentioned doesn't need a comma
+        
+        points_message.append('\n Current Ranking:')
+            
+        sorted_players = sorted(self.players, key=lambda player: player.points, reverse=True)
+        
+        for i, player in enumerate(sorted_players, 1):
+            points_message.append(f'#{i} - {player.user.mention} - {player.points} points')
+            
+        points_message = '\n'.join(points_message)
+        await self.channel.send(points_message)
+        
+        await asyncio.sleep(10)
+                
         if self.round >= 5:
             pass  # ending stuff
         else:
