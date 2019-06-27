@@ -50,9 +50,11 @@ class Match:
         self.stage = "lobby"
         self.responses = {}
         self.already_done_questions = []
-        # self.settings = {
-        #    "rounds": 0
-        #}
+        self.settings = {
+            "rounds": 5,
+            "response_time": 120,
+            "voting_time": 30
+        }
 
         self.add_player(host)
 
@@ -74,6 +76,17 @@ class Match:
                 self.round = 0
                 await util.respond(message, True)
                 await self.submit()
+            if parsed[0] == 'set' and self.stage == 'lobby':
+                try:
+                    if len(parsed) >= 2:
+                        if parsed[1] in self.settings.keys():
+                            if len(parsed) >= 3:
+                                self.settings[parsed[1]] = int(parsed[2])
+                                await util.respond(message, True)
+                            else: await message.channel.send("Need a value.")
+                        else: await message.channel.send("Unknown setting.")
+                    else: await message.channel.send("Valid settings are `rounds`, `response_time`, and `voting_time`.")
+                except ValueError: await message.channel.send("Not a number.")
 
     async def on_dm(self, message, parsed):
         if self.stage == "submit":
@@ -98,9 +111,9 @@ class Match:
         await self.channel.send(f'**Round {self.round}** has started! Check your DMs!')
 
         for player in self.players:
-            await player.user.send(f'Write a fake definition for: \n\n**{self.term}** \n\nYou have {60} seconds.')
+            await player.user.send(f'Write a fake definition for: \n\n**{self.term}** \n\nYou have {self.settings["response_time"]} seconds.')
 
-        await asyncio.sleep(60)
+        await asyncio.sleep(self.settings["response_time"])
 
         await self.voting()
 
@@ -120,7 +133,7 @@ class Match:
             voting_messages[player_id] = msg
             await asyncio.sleep(1.5)
             
-        await asyncio.sleep(30)
+        await asyncio.sleep(self.settings["voting_time"])
         
         points_message = []
         
@@ -132,11 +145,7 @@ class Match:
             reaction = [r for r in message.reactions if r.emoji == "✅" ][0]
             voters = []
             async for user in reaction.users():
-                if user.bot: # we don't want our own votes
-                    continue
-                if user.id == player_id:
-                    continue
-                if not find_player_from_id(user.id):
+                if user.bot or user.id == player_id or not find_player_from_id(user.id):
                     continue
                 voters.append(find_player_from_id(user.id))
             
@@ -170,7 +179,7 @@ class Match:
         
         await asyncio.sleep(10)
                 
-        if self.round >= 5:
+        if self.round >= self.settings["rounds"]:
             pass  # ending stuff
         else:
             await self.submit()
