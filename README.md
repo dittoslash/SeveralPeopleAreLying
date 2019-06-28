@@ -1,2 +1,3 @@
 # Several People Are Lying...
-Discord 2019 Hack Week entry based on the Technical Difficulties's Two of These People are Lying format.
+Discord 2019 Hack Week entry based on the Technical Difficulties's Two of These People are Lying format.  
+Several People Are Lying can be played [here](https://discord.gg/CxtZDhb) or by inviting the bot [here](https://discordapp.com/api/oauth2/authorize?client_id=594105101073907720&permissions=0&scope=bot).
