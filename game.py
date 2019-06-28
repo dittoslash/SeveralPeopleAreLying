@@ -180,7 +180,16 @@ class Match:
         await asyncio.sleep(10)
                 
         if self.round >= self.settings["rounds"]:
-            pass  # ending stuff
+            top = self.players[0]
+            for p in self.players:
+                if p.points > top.points:
+                    top = p
+            await self.channel.send(f'{top.user.mention} wins, with {top.points} points!')
+
+            for p in self.players:
+                self.remove_player(p.user)
+                del matches[self.channel.id]
+                print(matches, players)
         else:
             await self.submit()
 
@@ -189,5 +198,5 @@ class Match:
         players[user.id] = self
 
     def remove_player(self, user):  # Might not actually work. Probably will.
-        self.players.remove(Player(user, self))
+        self.players.remove(find_player_from_id(user.id))
         del players[user.id]
